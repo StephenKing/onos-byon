@@ -19,26 +19,73 @@ package org.onos.byon;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.onlab.packet.MacAddress;
+import org.onosproject.TestApplicationId;
+import org.onosproject.core.IdGenerator;
+import org.onosproject.net.HostId;
+import org.onosproject.net.intent.HostToHostIntent;
+import org.onosproject.net.intent.Intent;
+import org.onosproject.net.intent.Key;
+import org.onosproject.net.intent.MockIdGenerator;
+
+import java.util.Optional;
+
+import static org.junit.Assert.*;
 
 /**
  * Test network manager.
  */
 public class NetworkManagerTest {
-    NetworkManager manager;
+
+    protected NetworkManager manager;
+    protected IdGenerator idGenerator = new MockIdGenerator();
 
     @Before
     public void setUp() {
-//        manager = new NetworkManager();
-//        manager.activate();
+        manager = new NetworkManager();
+        manager.appId = new TestApplicationId("network-test");
+        Intent.bindIdGenerator(idGenerator);
+
     }
 
     @After
     public void tearDown() {
-//        manager.deactivate();
+        Intent.unbindIdGenerator(idGenerator);
+    }
+
+    public static final String NETWORK = "test";
+    public static final String NETWORK_2 = "test2";
+    public static final HostId HOST_1 = HostId.hostId(MacAddress.valueOf(1L));
+    public static final HostId HOST_2 = HostId.hostId(MacAddress.valueOf(2L));
+    public static final HostId HOST_3 = HostId.hostId(MacAddress.valueOf(3L));
+
+    @Test
+    public void testHostOrderEquality() {
+        Key key         = manager.key(NETWORK, HOST_1, HOST_2);
+        Key reverse     = manager.key(NETWORK, HOST_2, HOST_1);
+        Key keyDiffHost = manager.key(NETWORK, HOST_1, HOST_3);
+        Key keyDiffNet  = manager.key(NETWORK_2, HOST_1, HOST_2);
+
+        assertEquals(key, reverse);
+        assertNotEquals(key, keyDiffHost);
+        assertNotEquals(key, keyDiffNet);
     }
 
     @Test
-    public void test1() {
-        //todo
+    public void testMatches() {
+        Intent intent = HostToHostIntent.builder()
+                .key(manager.key(NETWORK, HOST_1, HOST_2))
+                .appId(manager.appId)
+                .one(HOST_1)
+                .two(HOST_2)
+                .build();
+
+        assertTrue(manager.matches(NETWORK, Optional.of(HOST_1), intent));
+        assertTrue(manager.matches(NETWORK, Optional.of(HOST_2), intent));
+        assertTrue(manager.matches(NETWORK, Optional.empty(), intent));
+
+        assertFalse(manager.matches(NETWORK, Optional.of(HOST_3), intent));
+        assertFalse(manager.matches(NETWORK_2, Optional.of(HOST_1), intent));
+        assertFalse(manager.matches(NETWORK_2, Optional.of(HOST_3), intent));
     }
 }

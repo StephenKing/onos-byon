@@ -66,7 +66,7 @@ public class NetworkManager implements NetworkService {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected EventDeliveryService eventDispatcher;
 
-    private ApplicationId appId;
+    protected ApplicationId appId;
     private final ListenerRegistry<NetworkEvent, NetworkListener>
             listenerRegistry = new ListenerRegistry<>();
 
@@ -147,7 +147,7 @@ public class NetworkManager implements NetworkService {
      * @param two host two
      * @return canonical intent string key
      */
-    private Key key(String network, HostId one, HostId two) {
+    protected Key key(String network, HostId one, HostId two) {
         String hosts = one.toString().compareTo(two.toString()) < 0 ?
                 format(HOST_FORMAT, one, two) : format(HOST_FORMAT, two, one);
         return Key.of(format(KEY_FORMAT, network, hosts), appId);
@@ -171,13 +171,14 @@ public class NetworkManager implements NetworkService {
     }
 
     /**
-     * TODO.
-     * @param network
-     * @param id
-     * @param intent
-     * @return
+     * Matches an intent to a network and optional host.
+     *
+     * @param network network name
+     * @param id optional host id, wildcard if missing
+     * @param intent intent to match
+     * @return true if intent matches, false otherwise
      */
-    private boolean matches(String network, Optional<HostId> id, Intent intent) {
+    protected boolean matches(String network, Optional<HostId> id, Intent intent) {
         if (!Objects.equals(appId, intent.appId())) {
             // different app ids
             return false;
