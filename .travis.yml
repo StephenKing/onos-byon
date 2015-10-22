@@ -1,6 +1,18 @@
 language: java
-# install: 
 jdk:
-  - oraclejdk8
+- oraclejdk8
 notifications:
   email: st+travis-onos-test@st-g.de
+deploy:
+  provider: releases
+  api_key:
+    secure: fccTJAY1UzGyH/s6FfWoEfPl8UsoELREujWkcBvftnLOwgBI432BuMpSpMD6koizPThOm6RZzQAMz5h6/4gTg+UDVxvHaEOn9DCGagapOTLmD+Oxl6hKuti37DE7K5iuqHyWru+Y1452/Iik0hdjx8EIZJYNPPq2GqwuEk/GeJ1tBhLrqIw0RvLU+tkMW8Qb/DMNH2iTV2mQ+d0b/+B6+2ZU6N9jcnaWx7mB5jc4hmGtVCOrPgQRkD7JaabbY+Ok85CO5GNywJkL98a6y//ZRWyWxmteITyjFw2aiuyMJRhApiSG0D2R578U+ThXbWRh9dsnyfznRwjQOfGYtc8XG+TNTywEJlV5QJYA2PZefQokGbkzAedEYvyiqg+YVvlxeNtpC8C6gWTTny3jZVqMHjLF7GwmTAu5f7UxbJDLYUwZ79Tki2mFRkybZg8lI+e1cn1ajciscMjn3mLG8TLBukuNx2uEvnlrSxlQwpTQVqH3U3dZGZSe8kyfkmimRXub5M37g9x/eoHqGRdMrs/IGKk2ijKAwo9Q2hrPiljlaT0GKaAB1OXZ9xFkzerKvc+ZfMJwFDzl3pJqAFQLl3c+055mE+ZAmXadnLfklg6cViTpUGmC2K0EwaBCZGMu6GyNsZf2tXJNMOAbKtxof2rG8i36cdTGcMiUngRXdhuhHHg=
+  file:
+  - target/byon-1.0-SNAPSHOT.jar
+  - target/byon-1.0-SNAPSHOT.oar
+  on:
+    repo: StephenKing/onos-byon
+    tags: true
+    branch: travis-ci
+after_deploy:
+- "echo 'deployed!'"
