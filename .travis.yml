@@ -1,0 +1,6 @@
+language: java
+# install: 
+jdk:
+  - oraclejdk8
+notifications:
+  email: st+travis-onos-test@st-g.de
